@@ -173,5 +173,5 @@ If you ran the `npm run db:seed` command during setup, you can immediately test 
 
 <div align="center">
   <br />
-  <b>Built for Hackathon 2026.</b>
+  <b>Built by Zahir Ahmad for Hackathon 2026.</b>
 </div>
