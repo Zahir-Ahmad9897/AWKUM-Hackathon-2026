@@ -106,6 +106,7 @@ model Campaign {
   currentAmount Float          @default(0)
   deadline      DateTime
   status        CampaignStatus @default(PENDING)
+  imageUrl      String?
   rejectionReason String?
   userId        Int
   createdAt     DateTime       @default(now())
@@ -130,6 +131,7 @@ model Donation {
   amount        Float
   message       String?
   isAnonymous   Boolean  @default(false)
+  slipUrl       String?
   transactionId String   @unique         // Fake UUID-based transaction ID
   createdAt     DateTime @default(now())
 

@@ -15,8 +15,10 @@ router.get("/mine", authenticate, getMine);
 // Single campaign — public with optional auth for role-aware display
 router.get("/:id", optionalAuthenticate, getOne);
 
+const upload = require("../middleware/upload");
+
 // Authenticated actions
-router.post("/", authenticate, create);
+router.post("/", authenticate, upload.single("image"), create);
 router.put("/:id", authenticate, update);
 router.delete("/:id", authenticate, remove);
 

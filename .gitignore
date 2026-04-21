@@ -30,3 +30,6 @@ Thumbs.db
 # Presentation Files
 *.pptx
 Presentation_Outline.md
+
+# Uploads
+backend/uploads/

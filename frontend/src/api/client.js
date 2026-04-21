@@ -46,7 +46,7 @@ export const authAPI = {
 export const campaignsAPI = {
   getAll: (params) => API.get("/campaigns", { params }),
   getOne: (id) => API.get(`/campaigns/${id}`),
-  create: (data) => API.post("/campaigns", data),
+  create: (data, config) => API.post("/campaigns", data, config),
   update: (id, data) => API.put(`/campaigns/${id}`, data),
   delete: (id) => API.delete(`/campaigns/${id}`),
   getMine: () => API.get("/campaigns/mine"),
@@ -54,7 +54,7 @@ export const campaignsAPI = {
 
 // ─── Donations API ───
 export const donationsAPI = {
-  donate: (data) => API.post("/donations", data),
+  donate: (data, config) => API.post("/donations", data, config),
   getReceipt: (txId) => API.get(`/donations/receipt/${txId}`),
   getCampaignDonations: (id) => API.get(`/donations/campaign/${id}`),
 };

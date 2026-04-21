@@ -26,7 +26,19 @@ const updateCampaignSchema = z.object({
 
 const create = async (req, res) => {
   try {
-    const validated = createCampaignSchema.parse(req.body);
+    // When using FormData, payload properties come in as strings. 
+    // We parse them to numbers before validating.
+    const payload = {
+      title: req.body.title,
+      description: req.body.description,
+      goalAmount: parseFloat(req.body.goalAmount),
+      deadline: req.body.deadline,
+    };
+
+    const validated = createCampaignSchema.parse(payload);
+    
+    // Check if image was uploaded
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     const campaign = await prisma.campaign.create({
       data: {
@@ -34,6 +46,7 @@ const create = async (req, res) => {
         description: validated.description,
         goalAmount: validated.goalAmount,
         deadline: new Date(validated.deadline),
+        imageUrl: imageUrl,
         userId: req.user.id,
       },
       include: {

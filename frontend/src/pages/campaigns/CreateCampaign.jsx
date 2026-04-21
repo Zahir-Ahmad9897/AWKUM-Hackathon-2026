@@ -16,11 +16,18 @@ export default function CreateCampaign() {
   const onSubmit = async (data) => {
     try {
       setError("");
-      await campaignsAPI.create({
-        title: data.title,
-        description: data.description,
-        goalAmount: parseFloat(data.goalAmount),
-        deadline: data.deadline,
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("goalAmount", data.goalAmount);
+      formData.append("deadline", data.deadline);
+      
+      if (data.image && data.image[0]) {
+        formData.append("image", data.image[0]);
+      }
+
+      await campaignsAPI.create(formData, {
+        headers: { "Content-Type": "multipart/form-data" }
       });
       toast.success("Campaign created! It will be reviewed by an NGO.");
       navigate("/dashboard");
@@ -97,6 +104,16 @@ export default function CreateCampaign() {
                 />
                 {errors.deadline && <p className="text-rose-500 text-xs mt-1">{errors.deadline.message}</p>}
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-dark-700 mb-1.5">Campaign Cover Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("image")}
+                className="w-full px-4 py-2 bg-dark-50 border border-dark-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary-100 file:text-primary-700 hover:file:bg-primary-200"
+              />
             </div>
 
             <button

@@ -19,7 +19,13 @@ const donateSchema = z.object({
 
 const donate = async (req, res) => {
   try {
-    const validated = donateSchema.parse(req.body);
+    const payload = {
+      campaignId: parseInt(req.body.campaignId),
+      amount: parseFloat(req.body.amount),
+      message: req.body.message,
+      isAnonymous: req.body.isAnonymous === 'true' || req.body.isAnonymous === true
+    };
+    const validated = donateSchema.parse(payload);
 
     // Verify campaign exists and is accepting donations
     const campaign = await prisma.campaign.findUnique({
@@ -43,6 +49,9 @@ const donate = async (req, res) => {
     // Generate fake transaction ID (simulated payment)
     const transactionId = `TF-${uuidv4().slice(0, 8).toUpperCase()}`;
 
+    // Check if slip was uploaded
+    const slipUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
     // FIX (Flaw #2): Auto-complete logic is now INSIDE the transaction
     // to prevent race conditions when multiple donors hit the goal simultaneously.
     const newAmount = campaign.currentAmount + validated.amount;
@@ -56,6 +65,7 @@ const donate = async (req, res) => {
           amount: validated.amount,
           message: validated.message || null,
           isAnonymous: validated.isAnonymous,
+          slipUrl: slipUrl,
           transactionId,
         },
         include: {
@@ -101,6 +111,7 @@ const donate = async (req, res) => {
           amount: validated.amount,
           campaignName: donation.campaign.title,
           date: donation.createdAt,
+          slipUrl: donation.slipUrl,
         },
       },
     });

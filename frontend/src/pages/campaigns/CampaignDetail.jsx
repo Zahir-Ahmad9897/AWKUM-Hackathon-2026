@@ -48,11 +48,18 @@ export default function CampaignDetail() {
   const onDonate = async (data) => {
     try {
       setDonating(true);
-      const res = await donationsAPI.donate({
-        campaignId: parseInt(id),
-        amount: parseFloat(data.amount),
-        message: data.message || undefined,
-        isAnonymous: data.isAnonymous || false,
+      const formData = new FormData();
+      formData.append("amount", data.amount);
+      if (data.message) formData.append("message", data.message);
+      formData.append("isAnonymous", data.isAnonymous || false);
+      formData.append("campaignId", parseInt(id));
+      
+      if (data.slip && data.slip[0]) {
+        formData.append("slip", data.slip[0]);
+      }
+
+      const res = await donationsAPI.donate(formData, {
+        headers: { "Content-Type": "multipart/form-data" }
       });
       setReceipt(res.data.data.receipt);
       toast.success("Donation successful! 🎉");
@@ -122,7 +129,10 @@ export default function CampaignDetail() {
               </div>
 
               <div className="prose prose-dark-800 max-w-none">
-                <h3 className="text-lg font-bold mb-2">About this Campaign</h3>
+                <h3 className="text-lg font-bold mb-4">About this Campaign</h3>
+                {campaign.imageUrl && (
+                  <img src={`http://localhost:4000${campaign.imageUrl}`} alt={campaign.title} className="w-full h-80 object-cover rounded-xl mb-6 shadow-sm border border-dark-100" />
+                )}
                 <p className="text-dark-600 whitespace-pre-wrap leading-relaxed">{campaign.description}</p>
               </div>
             </div>
@@ -184,6 +194,16 @@ export default function CampaignDetail() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-dark-700 mb-1">Transaction Slip / Screenshot</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    {...register("slip")}
+                    className="w-full px-4 py-2 bg-dark-50 border border-dark-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-100 file:text-primary-700 hover:file:bg-primary-200 text-sm"
+                  />
+                </div>
+
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" {...register("isAnonymous")} className="w-4 h-4 rounded border-dark-300 text-primary-600 focus:ring-primary-500" />
                   <span className="text-sm text-dark-600">Donate anonymously</span>
@@ -213,6 +233,14 @@ export default function CampaignDetail() {
                     <p><strong>Amount:</strong> {formatAmount(receipt.amount)}</p>
                     <p><strong>Campaign:</strong> {receipt.campaignName}</p>
                     <p><strong>Date:</strong> {new Date(receipt.date).toLocaleString()}</p>
+                    {receipt.slipUrl && (
+                      <p>
+                        <strong>Attached Slip:</strong>{" "}
+                        <a href={`http://localhost:4000${receipt.slipUrl}`} target="_blank" rel="noreferrer" className="text-emerald-900 underline hover:text-primary-600">
+                          View Receipt Image
+                        </a>
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
