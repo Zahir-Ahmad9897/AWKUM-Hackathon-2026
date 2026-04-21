@@ -20,6 +20,8 @@ yarn-error.log*
 # Workspace text logs
 frontend.txt
 srs_extracted.txt
+"🧾 SOFTWARE REQUIREMENTS SPECIFICATION.docx"
+*.docx
 
 # OS Files
 .DS_Store
