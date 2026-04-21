@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* ─── TrustFund Design System (Psychology-Backed) ─── */
+
+@theme {
+  /* Trust Blue - Evokes stability, credibility, and security (Primary 60%) */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Impact Emerald - For growth, health, and verified success (Accent 10%) */
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+
+  /* Community Amber */
+  --color-amber-50: #fffbeb;
+  --color-amber-500: #f59e0b;
+
+  /* Action Rose - Used sparingly for urgent/critical UI flags */
+  --color-rose-50: #fff1f2;
+  --color-rose-500: #f43f5e;
+
+  /* Clean Neutrals for Professional Foundation (Secondary 30%) */
+  --color-dark-50: #f8fafc;
+  --color-dark-100: #f1f5f9;
+  --color-dark-200: #e2e8f0;
+  --color-dark-300: #cbd5e1;
+  --color-dark-400: #94a3b8;
+  --color-dark-500: #64748b;
+  --color-dark-600: #475569;
+  --color-dark-700: #334155;
+  --color-dark-800: #1e293b;
+  --color-dark-900: #0f172a;
+  --color-dark-950: #020617;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Base Styles ─── */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #ffffff;
+    color: var(--color-dark-800);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+  }
+}
+
+/* ─── Custom Scrollbar ─── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dark-400);
+}
+
+/* ─── Animations ─── */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* ─── Glass Effect ─── */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Gradient Text ─── */
+
+.gradient-text {
+  background: linear-gradient(135deg, #3573f8, #8b5cf6, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

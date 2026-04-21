@@ -1,0 +1,184 @@
+// ─── Prisma Schema for TrustFund ───
+// Models: User, NGOProfile, Campaign, Donation, Withdrawal, Report
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ──────────────────────────────────────
+// ENUMS
+// ──────────────────────────────────────
+
+enum Role {
+  USER
+  NGO
+  ADMIN
+}
+
+enum CampaignStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  COMPLETED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NGOStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
+}
+
+// FIX (W4): TargetType is now a proper enum, not a raw String
+enum TargetType {
+  CAMPAIGN
+  USER
+}
+
+// ──────────────────────────────────────
+// USER
+// ──────────────────────────────────────
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  campaigns   Campaign[]
+  donations   Donation[]
+  withdrawals Withdrawal[]
+  ngoProfile  NGOProfile?
+  reports     Report[]     @relation("reporter")
+
+  @@map("users")
+}
+
+// ──────────────────────────────────────
+// NGO PROFILE (onboarding request)
+// ──────────────────────────────────────
+
+model NGOProfile {
+  id                 Int       @id @default(autoincrement())
+  userId             Int       @unique
+  organizationName   String
+  registrationNumber String
+  status             NGOStatus @default(PENDING)
+  rejectionReason    String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ngo_profiles")
+}
+
+// ──────────────────────────────────────
+// CAMPAIGN
+// ──────────────────────────────────────
+
+model Campaign {
+  id            Int            @id @default(autoincrement())
+  title         String
+  description   String         @db.Text
+  goalAmount    Float
+  currentAmount Float          @default(0)
+  deadline      DateTime
+  status        CampaignStatus @default(PENDING)
+  rejectionReason String?
+  userId        Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  donations   Donation[]
+  withdrawals Withdrawal[]
+
+  @@map("campaigns")
+}
+
+// ──────────────────────────────────────
+// DONATION (simulated – no real gateway)
+// ──────────────────────────────────────
+
+model Donation {
+  id            Int      @id @default(autoincrement())
+  campaignId    Int
+  userId        Int
+  amount        Float
+  message       String?
+  isAnonymous   Boolean  @default(false)
+  transactionId String   @unique         // Fake UUID-based transaction ID
+  createdAt     DateTime @default(now())
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("donations")
+}
+
+// ──────────────────────────────────────
+// WITHDRAWAL
+// ──────────────────────────────────────
+
+model Withdrawal {
+  id         Int              @id @default(autoincrement())
+  campaignId Int
+  userId     Int
+  amount     Float
+  purpose    String
+  status     WithdrawalStatus @default(PENDING)
+  reason     String?          // Rejection reason
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("withdrawals")
+}
+
+// ──────────────────────────────────────
+// REPORT
+// ──────────────────────────────────────
+
+model Report {
+  id         Int          @id @default(autoincrement())
+  reporterId Int
+  targetType TargetType
+  targetId   Int
+  reason     String       @db.Text
+  status     ReportStatus @default(PENDING)
+  resolution String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relations
+  reporter User @relation("reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@map("reports")
+}
